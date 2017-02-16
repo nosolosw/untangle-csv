@@ -1,36 +1,23 @@
-const parse = require( 'csv-parse' );
+const csv = require( 'csv-parser' );
 const stringify = require( 'csv-stringify' );
 const forOwn = require( 'lodash.forown' );
-const moment = require( 'moment' );
 
-module.exports = ( input, callback ) => {
-	const options = {
-		header: true,
-		formatters: {
-			date: ( value ) => moment( value ).format( 'YYYY-MM-DD' )
-		}
-	};
-
+module.exports = ( inputStream, callback ) => {
 	const splitKey = ( key ) => key.toString().split( ',' ).map( ( k ) => k.trim() );
 
 	const processRow = ( row ) => {
 		const rowUntangled = {};
 		forOwn( row, ( value, key ) => {
 			splitKey( key ).map( ( k ) => {
-				rowUntangled[ k ] = rowUntangled[ k ] ? value + rowUntangled[ k ] : value;
+				rowUntangled[ k ] = rowUntangled[ k ] ? +value + +rowUntangled[ k ] : value;
 			} );
 		} );
 		return rowUntangled;
 	};
 
-	parse( input, {
-		auto_parse: true,
-		auto_parse_date: true,
-		columns: true
-	}, ( err, data ) => {
-		if ( err ) {
-			throw err;
-		}
-		stringify( data.map( processRow ), options, callback );
-	} );
+	const rows = [];
+	const parser = inputStream.pipe( csv() );
+	parser.on( 'data', ( data ) => rows.push( processRow( data ) ) );
+	parser.on( 'end', () => stringify( rows, { header: true }, callback ) );
+	parser.on( 'err', callback );
 };

@@ -11,19 +11,17 @@ const fs = require( 'fs' );
 const parser = require( './parser' );
 
 if ( ! process.stdin.isTTY ) {
-	// cat demo.csv | node index.js > demo-untangled.csv
+	// cat demo.csv | ./index.js > demo-untangled.csv
 	process.stdin.setEncoding( 'utf-8' );
-	process.stdin.on( 'data', ( data ) => {
-		parser( data, ( err, output ) => {
-			if ( err ) {
-				process.stderr.write( err );
-			} else {
-				process.stdout.write( output );
-			}
-		} );
+	parser( process.stdin, ( err, output ) => {
+		if ( err ) {
+			process.stderr.write( err );
+		} else {
+			process.stdout.write( output );
+		}
 	} );
 } else {
-	// node index.js inputFile outputFile
+	// ./index.js inputFile outputFile
 
 	const writeToFile = ( err, output ) => {
 		if ( err ) {
@@ -36,10 +34,5 @@ if ( ! process.stdin.isTTY ) {
 		} );
 	};
 
-	fs.readFile( __dirname + '/' + process.argv[ 2 ], 'utf8', ( err, data ) => {
-		if ( err ) {
-			throw err;
-		}
-		parser( data, writeToFile );
-	} );
+	parser( fs.createReadStream( __dirname + '/' + process.argv[ 2 ] ), writeToFile );
 }
