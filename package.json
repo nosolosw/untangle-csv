@@ -1,0 +1,33 @@
+{
+	"name": "untangle-csv",
+	"version": "0.0.1",
+	"description": "Utility to untangle CSVs",
+	"keywords": ["csv"],
+	"license": "GPL-3.0",
+	"main": "index.js",
+	"author": "Andrés Maneiro <andres.maneiro@gmail.com>",
+	"url": "https://github.com/nosolosow/untangle-csv",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/nosolosow/untangle-csv.git"
+	},
+	"bin": {
+		"untangle-csv": "./index.js"
+	},
+	"scripts": {
+		"test": "`npm bin`/tape test.js | `npm bin`/faucet"
+	},
+	"dependencies": {
+		"csv-parse": "^1.2.0",
+		"csv-stringify": "^1.0.4",
+		"lodash.forown": "^4.4.0",
+		"moment": "^2.17.1"
+	},
+	"devDependencies": {
+		"eslint": "^3.15.0",
+		"eslint-config-wpcalypso": "^0.6.0",
+		"eslint-plugin-wpcalypso": "^3.0.1",
+		"faucet": "0.0.1",
+		"tape": "^4.6.3"
+	}
+}
